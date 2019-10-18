@@ -41,22 +41,50 @@ app.on("activate", () => {
 });
 
 ipcMain.on("want-to-upload", (e, arg) => {
-	dialog.showOpenDialog({ properties: ['openFile'] }, (files) => {
-		var filein, fileout, type;
+	dialog.showOpenDialog({
+		title: "Upload a Video",
+		buttonLabel: "Upload",
+		properties: ["openFile", "multiSelections"]
+	}, (files) => {
+		var file, filein, fileout, type;
 		var ts;
 		var bin, bout;
+		var idx;
 
-		if(files){
-			filein = path.parse(files[0]);
-			type = filein.ext.replace(".", "");
-			ts = Date.now();
-			fileout = path.join(__dirname, "db/", filein.name + "." + ts + "." + type);
-			bin = fs.createReadStream(files[0]);
-			bout = fs.createWriteStream(fileout);
-			bin.pipe(bout);
-			bout.on("finish", () => {
-				e.sender.send("file-uploaded", fileout);
-			});
-		}
+		if(files && files.length > 0)
+			for(filein of files){
+				file = path.parse(filein);
+				type = file.ext.replace(".", "");
+				ts = Date.now();
+				fileout = path.join(__dirname, "db/", file.name + "." + ts + "." + type);
+				if(fs.existsSync(fileout)){
+					idx = dialog.showMessageBoxSync({
+						type: "info",
+						title: "Attempt to write an existing file",
+						message: "The file " + path.parse(fileout).base + " already exists in the DB. Do you want to overwrite it?",
+						buttons: ["Yes", "No"]
+					});
+					if(idx === 1)
+						continue;
+				}
+				bin = fs.createReadStream(filein);
+				bout = fs.createWriteStream(fileout);
+				bout.on("finish", () => {
+					e.sender.send("file-uploaded", fileout);
+				});
+				bin.pipe(bout);
+			}
+	});
+});
+
+ipcMain.on("want-to-open", (e, arg) => {
+	dialog.showOpenDialog({
+		title: "Open a Video",
+		buttonLabel: "Open",
+		defaultPath: path.join(__dirname, "db/"),
+		properties: ["openFile"]
+	}, (files) => {
+		if(files && files.length > 0)
+			e.sender.send("file-open", files[0]);
 	});
 });
