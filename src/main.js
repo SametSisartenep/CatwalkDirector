@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const net = require("net");
 const { app, BrowserWindow } = require("electron");
 const { ipcMain, dialog } = require("electron");
 
@@ -19,13 +20,13 @@ createwindow()
 			preload: path.join(__dirname, "preload.js")
 		}
 	});
-	mainwindow.loadURL(`file://${__dirname}/index.html`);
 	mainwindow.on("closed", () => {
 		mainwindow = null;
 	});
 	mainwindow.once("ready-to-show", () => {
 		mainwindow.show();
 	});
+	mainwindow.loadURL(`file://${__dirname}/index.html`);
 }
 
 app.on("ready", createwindow);
@@ -47,7 +48,6 @@ ipcMain.on("want-to-upload", (e, arg) => {
 		properties: ["openFile", "multiSelections"]
 	}, (files) => {
 		var file, filein, fileout, type;
-		var ts;
 		var bin, bout;
 		var idx;
 
@@ -55,8 +55,7 @@ ipcMain.on("want-to-upload", (e, arg) => {
 			for(filein of files){
 				file = path.parse(filein);
 				type = file.ext.replace(".", "");
-				ts = Date.now();
-				fileout = path.join(__dirname, "db/", file.name + "." + ts + "." + type);
+				fileout = path.join(__dirname, "db/", file.name + "." + type);
 				if(fs.existsSync(fileout)){
 					idx = dialog.showMessageBoxSync({
 						type: "info",
@@ -87,4 +86,12 @@ ipcMain.on("want-to-open", (e, arg) => {
 		if(files && files.length > 0)
 			e.sender.send("file-open", files[0]);
 	});
+});
+
+ipcMain.on("send-new-config", (e, arg) => {
+	var stream;
+
+	stream = net.connect("/tmp/catwalk.pipe");
+	stream.write(JSON.stringify(arg));
+	stream.end();
 });

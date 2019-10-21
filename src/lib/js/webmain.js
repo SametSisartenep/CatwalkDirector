@@ -1,9 +1,10 @@
 var vjs;
-var uploadbtn, openbtn;
+var uploadbtn, openbtn, cfgbtn;
 
 vjs = videojs("viewport");
 uploadbtn = document.querySelector("#upload");
 openbtn = document.querySelector("#open");
+cfgbtn = document.querySelector("#sendcfg");
 
 uploadbtn.addEventListener("click", () => {
 	ipcRenderer.send("want-to-upload");
@@ -11,6 +12,10 @@ uploadbtn.addEventListener("click", () => {
 
 openbtn.addEventListener("click", () => {
 	ipcRenderer.send("want-to-open");
+});
+
+cfgbtn.addEventListener("click", () => {
+	ipcRenderer.send("send-new-config", {hi: "there", there: "hi"});
 });
 
 ipcRenderer.on("file-uploaded", (e, arg) => {
