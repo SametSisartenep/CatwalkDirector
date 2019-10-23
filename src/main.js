@@ -4,6 +4,9 @@ const net = require("net");
 const { app, BrowserWindow } = require("electron");
 const { ipcMain, dialog } = require("electron");
 
+const DBPATH = path.join(__dirname, "db/");
+const EXPOHARBOR = "/n";
+
 let mainwindow;
 
 function
@@ -55,7 +58,7 @@ ipcMain.on("want-to-upload", (e, arg) => {
 			for(filein of files){
 				file = path.parse(filein);
 				type = file.ext.replace(".", "");
-				fileout = path.join(__dirname, "db/", file.name + "." + type);
+				fileout = path.join(DBPATH, file.name + "." + type);
 				if(fs.existsSync(fileout)){
 					idx = dialog.showMessageBoxSync({
 						type: "info",
@@ -91,7 +94,9 @@ ipcMain.on("want-to-open", (e, arg) => {
 ipcMain.on("send-new-config", (e, arg) => {
 	var stream;
 
-	stream = net.connect("/tmp/catwalk.pipe");
+	stream = net.connect(path.join(EXPOHARBOR, arg.hostname, "/tmp/catwalk.sock"));
+	//stream = net.connect("/tmp/catwalk.sock");
+	arg.video = path.join(EXPOHARBOR, arg.hostname, "/srv/expo/src/db/", path.parse(arg.video).base);
 	stream.write(JSON.stringify(arg));
 	stream.end();
 });

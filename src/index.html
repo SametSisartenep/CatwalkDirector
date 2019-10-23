@@ -10,14 +10,35 @@
 <body>
 	<h1>Catwalk</h1>
 	<div>
-	<button id="upload">Upload</button>
-	<button id="open">Open</button>
-	<button id="sendcfg">Send Config</button>
+		<button id="upload">Upload</button>
+		<button id="open">Open</button>
+		<button id="sendcfg">Send Config</button>
+	</div>
+	<div id="expocfg">
+		<h3>Config</h3>
+		<div>
+			<label>Name</label><input type="text" name="hostname"/>
+		</div>
+		<h4>Clipping Rectangle</h4>
+		<div>
+			<label>minx</label><input type="number" name="minx"/>
+			<label>miny</label><input type="number" name="miny"/>
+		</div>
+		<div>
+			<label>maxx</label><input type="number" name="maxx"/>
+			<label>maxy</label><input type="number" name="maxy"/>
+		</div>
+		<div>
+			<label>Rotation</label><input type="number" name="rotation"/>
+		</div>
+		<button id="applycfg">Apply</button>
 	</div>
 	<div>
-	<video id="viewport" class="video-js" controls muted preload="auto" data-setup='{}'>
-		<source src="db/versace.webm" type="video/webm"/>
-	</video>
+		<video id="source" class="video-js" autoplay controls muted preload="auto" data-setup='{}'></video>
+		<canvas id="viewport"></canvas>
+	</div>
+	<div>
+		<canvas id="preview"></canvas>
 	</div>
 	<footer>COPYRIGHT © MMXIX RODRIGO G. LÓPEZ </footer>
 	<script src="lib/video/video.js"></script>

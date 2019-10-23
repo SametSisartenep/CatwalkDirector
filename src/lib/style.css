@@ -9,9 +9,14 @@ button {
 	color: black;
 	border-radius: 5px;
 }
-#viewport {
-	width: 100%;
-	height: 720px;
+div label, div input {
+	margin: 0.2em;
+}
+canvas {
+	background-color: black;
+}
+#source {
+	display: none;
 }
 footer {
 	text-align: center;
