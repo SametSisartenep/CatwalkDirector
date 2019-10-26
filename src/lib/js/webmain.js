@@ -68,6 +68,13 @@ Dy(rect)
 }
 
 function
+ptinrect(pt, rect)
+{
+	return pt.x >= rect.minx && pt.y >= rect.miny &&
+		pt.x <= rect.maxx && pt.y <= rect.maxy;
+}
+
+function
 drawrect(ctx, rect, color, width)
 {
 	ctx.beginPath();
@@ -84,6 +91,19 @@ scalerect(rect)
 
 	wr = viewport.width/vwidth;
 	hr = viewport.height/vheight;
+	return {
+		minx: rect.minx*wr, miny: rect.miny*hr,
+		maxx: rect.maxx*wr, maxy: rect.maxy*hr
+	};
+}
+
+function
+unscalerect(rect)
+{
+	var wr, hr;
+
+	wr = vwidth/viewport.width;
+	hr = vheight/viewport.height;
 	return {
 		minx: rect.minx*wr, miny: rect.miny*hr,
 		maxx: rect.maxx*wr, maxy: rect.maxy*hr
@@ -113,7 +133,26 @@ play()
 }
 
 source.addEventListener("play", play, false);
+/*
+let body = document.querySelector("body");
+var drawing;
+body.addEventListener("mousedown", (e) => {
+	var p;
+	var r, clipr;
 
+	p = Pt(e.x, e.y);
+	r = Rect(viewport.offsetLeft, viewport.offsetTop, viewport.width, viewport.height);
+	if(ptinrect(p, r){
+		clipr = Rect(p.
+	}
+});
+body.addEventListener("mouseup", (e) => {
+
+});
+body.addEventListener("mousemove", (e) => {
+	
+});
+*/
 uploadbtn.addEventListener("click", () => {
 	ipcRenderer.send("want-to-upload");
 });

@@ -94,9 +94,11 @@ ipcMain.on("want-to-open", (e, arg) => {
 ipcMain.on("send-new-config", (e, arg) => {
 	var stream;
 
-	stream = net.connect(path.join(EXPOHARBOR, arg.hostname, "/tmp/catwalk.sock"));
-	//stream = net.connect("/tmp/catwalk.sock");
-	arg.video = path.join(EXPOHARBOR, arg.hostname, "/srv/expo/src/db/", path.parse(arg.video).base);
+	if(arg.hostname !== ""){
+		stream = net.connect(path.join(EXPOHARBOR, arg.hostname, "/tmp/catwalk.sock"));
+		arg.video = path.join(EXPOHARBOR, arg.hostname, "/srv/expo/src/db", path.parse(arg.video).base);
+	}else
+		stream = net.connect("/tmp/catwalk.sock");
 	stream.write(JSON.stringify(arg));
 	stream.end();
 });
